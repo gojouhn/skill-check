@@ -1,10 +1,13 @@
 package q008;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 /**
@@ -35,6 +38,27 @@ public class Q008 {
      */
     private static Stream<File> listJavaFiles() throws IOException {
         return Files.walk(Paths.get(".")).map(Path::toFile).filter(f -> f.getName().endsWith(".java"));
+    }
+
+    public static void main(String[] args) throws IOException {
+        Stream<File> stream = listJavaFiles();
+        for (Iterator<File> it = stream.iterator(); it.hasNext(); ) {
+            File file = (File) it.next();
+            InputStreamReader inReader = new InputStreamReader(new FileInputStream(file.getAbsolutePath()));
+            StringBuffer sBuf = new StringBuffer();
+            int ch;
+            while ((ch = inReader.read()) != -1) {
+                sBuf.append((char) ch);
+            }
+            String fileName = file.getName();
+            String str = sBuf.toString().replace("\r\n", "\n");
+            String[] line = str.split("\n", 0);
+            for (int i=0;i<line.length;i++) {
+                if (line[i].contains("\"") || line[i].contains("'")) {
+                    System.out.println(fileName+"("+ (i+1) +"): "+ line[i]);
+                };
+            }
+        }
     }
 }
 // 完成までの時間: xx時間 xx分
